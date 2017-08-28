@@ -7,4 +7,4 @@ if [ -z "$IMAGE" ]; then
 fi
 
 echo Building $IMAGE
-docker build -t ${IMAGE} .
+docker build --build-arg ARCH=$(uname -m) -t ${IMAGE} .
