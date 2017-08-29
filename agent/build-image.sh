@@ -9,4 +9,4 @@ if [ -z "$IMAGE" ]; then
 fi
 
 docker build --build-arg ARCH=${ARCH} -t ${IMAGE}_${ARCH} .
-echo Built ${IMAGE}
+echo Built ${IMAGE}_${ARCH}
