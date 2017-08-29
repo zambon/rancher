@@ -10,12 +10,3 @@ fi
 
 docker build --build-arg ARCH=${ARCH} -t ${IMAGE}_${ARCH} .
 echo Built ${IMAGE}
-
-cat > image-manifest.yaml << EOF
-image: ${IMAGE}
-manifests:
-  - image: ${IMAGE}_${ARCH}
-    platform:
-      architecture: ${ARCH}
-      os: linux
-EOF
