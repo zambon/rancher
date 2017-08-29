@@ -8,8 +8,8 @@ if [ -z "$IMAGE" ]; then
     IMAGE=$(grep RANCHER_AGENT_IMAGE Dockerfile | awk '{print $3}')
 fi
 
-echo Building ${IMAGE}
 docker build --build-arg ARCH=${ARCH} -t ${IMAGE}_${ARCH} .
+echo Built ${IMAGE}
 
 cat > image-manifest.yaml << EOF
 image: ${IMAGE}
