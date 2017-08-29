@@ -10,10 +10,10 @@ TAG=${TAG:-dev}
 
 IMAGE=${REPO}/agent-base:${TAG}
 
-[ -n "${AUTH[*]}" ] && docker login -u "$REGISTRY_USERNAME" -p "$REGISTRY_PASSWORD"
+[ -n "${AUTH[*]}" ] && docker login -u "$REGISTRY_USERNAME" -p "$REGISTRY_PASSWORD" "$REGISTRY_HOST"
 docker push ${IMAGE}_amd64
 docker push ${IMAGE}_ppc64le
-[ -n "${AUTH[*]}" ] && docker logout
+[ -n "${AUTH[*]}" ] && docker logout "$REGISTRY_HOST"
 
 manifest-tool "${AUTH[@]}" push from-args \
   --platforms linux/amd64,linux/ppc64le \
