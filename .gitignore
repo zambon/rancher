@@ -6,4 +6,3 @@ __pycache__
 .tox
 server/target
 MANIFEST
-image-manifest.yaml
