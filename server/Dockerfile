@@ -56,31 +56,49 @@ ENV DEFAULT_CATTLE_RANCHER_CLI_WINDOWS_URL https://releases.rancher.com/cli/${CA
 EXPOSE 3306
 ADD https://github.com/zambon/rancher__cattle/releases/download/${CATTLE_CATTLE_VERSION}/cattle.jar /usr/share/cattle/
 
-RUN cd / && for i in $(ls /s6-statics/*static.tar.gz);do tar -C /usr -zxvf $i;done && rm -rf /s6-statics/*static.tar.gz && \
+RUN cd / && \
+    for i in $(ls /s6-statics/*static.tar.gz); do \
+      tar -C /usr -zxvf $i; \
+    done && \
+    rm -rf /s6-statics/*static.tar.gz && \
+    \
     mkdir -p $CATTLE_HOME && \
     /usr/share/cattle/cattle.sh extract && \
-    curl -sL https:${DEFAULT_CATTLE_API_UI_INDEX}.tar.gz | tar xvzf - -C /usr/share/cattle/war --strip-components=1 && \
+    curl -sL https:${DEFAULT_CATTLE_API_UI_INDEX}.tar.gz | \
+      tar xvzf - -C /usr/share/cattle/war --strip-components=1 && \
+    \
     mkdir -p /usr/share/cattle/war/api-ui && \
-    curl -sL https:${CATTLE_API_UI_URL}.tar.gz | tar xvzf - -C /usr/share/cattle/war/api-ui --strip-components=1 && \
+    curl -sL https:${CATTLE_API_UI_URL}.tar.gz | \
+      tar xvzf - -C /usr/share/cattle/war/api-ui --strip-components=1 && \
+    \
     /usr/share/cattle/install_cattle_binaries && \
-    curl -sL https://github.com/prometheus/graphite_exporter/releases/download/v0.2.0/graphite_exporter-0.2.0.linux-amd64.tar.gz | tar -xzv -C /usr/bin/ --strip-components=1
+    curl -sL https://github.com/prometheus/graphite_exporter/releases/download/v0.2.0/graphite_exporter-0.2.0.linux-amd64.tar.gz | \
+      tar -xzv -C /usr/bin/ --strip-components=1
+
 RUN cd $CATTLE_HOME && \
-    echo "$DEFAULT_CATTLE_CATALOG_URL" | sed 's/${RELEASE}/'$(echo $CATTLE_RANCHER_SERVER_VERSION | sed -E 's/(v[0-9]+\.[0-9]+).*/\1-release/')/g > repo.json && \
+    echo "$DEFAULT_CATTLE_CATALOG_URL" | \
+      sed 's/${RELEASE}/'$(\
+        echo $CATTLE_RANCHER_SERVER_VERSION | \
+        sed -E 's/(v[0-9]+\.[0-9]+).*/\1-release/'\
+      )/g \
+      > repo.json && \
     cat repo.json && \
     rancher-catalog-service-sqlite --sqlite --validate --config repo.json && \
-    for i in cache/*/*; do [ -d $i ] && touch $i/.nopurge; done
+    for i in cache/*/*; do \
+      [ -d $i ] && touch $i/.nopurge; \
+    done
 
 VOLUME /var/lib/mysql /var/log/mysql /var/lib/cattle
 
-ENV DEFAULT_CATTLE_API_UI_JS_URL /api-ui/ui.min.js
-ENV DEFAULT_CATTLE_API_UI_CSS_URL /api-ui/ui.min.css
-ENV DEFAULT_CATTLE_MACHINE_EXECUTE true
+ENV DEFAULT_CATTLE_API_UI_JS_URL            /api-ui/ui.min.js
+ENV DEFAULT_CATTLE_API_UI_CSS_URL           /api-ui/ui.min.css
+ENV DEFAULT_CATTLE_MACHINE_EXECUTE          true
 ENV DEFAULT_CATTLE_COMPOSE_EXECUTOR_EXECUTE true
-ENV DEFAULT_CATTLE_CATALOG_EXECUTE true
-ENV DEFAULT_CATTLE_AUTH_SERVICE_EXECUTE true
-ENV DEFAULT_CATTLE_WEBHOOK_SERVICE_EXECUTE true
-ENV DEFAULT_CATTLE_SECRETS_API_EXECUTE true
-ENV CATTLE_RANCHER_SERVER_IMAGE zambon/server
+ENV DEFAULT_CATTLE_CATALOG_EXECUTE          true
+ENV DEFAULT_CATTLE_AUTH_SERVICE_EXECUTE     true
+ENV DEFAULT_CATTLE_WEBHOOK_SERVICE_EXECUTE  true
+ENV DEFAULT_CATTLE_SECRETS_API_EXECUTE      true
+ENV CATTLE_RANCHER_SERVER_IMAGE             zambon/server
 
 ENTRYPOINT ["/usr/bin/entry"]
 CMD ["/usr/bin/s6-svscan", "/service"]
