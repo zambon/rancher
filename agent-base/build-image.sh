@@ -6,5 +6,5 @@ ARCH=${ARCH:-"$(docker version -f '{{.Server.Arch}}')"}
 
 IMAGE=${REPO}/agent-base:${TAG}_${ARCH}
 
-docker build -t $IMAGE .
+docker build --build-arg ARCH=${ARCH} -t $IMAGE .
 echo Built $IMAGE
