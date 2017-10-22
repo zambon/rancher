@@ -1,5 +1,7 @@
 FROM ubuntu:16.04
 
+ARG ARCH
+
 COPY ./rancher-entrypoint.sh /
 ENV SSL_SCRIPT_COMMIT 98660ada3d800f653fc1f105771b5173f9d1a019
 RUN apt-get update && \
